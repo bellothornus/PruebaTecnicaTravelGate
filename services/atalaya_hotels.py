@@ -1,4 +1,7 @@
-from api_data_order import APIDataOrder,json,requests
+if __name__ == '__main__':
+	from api_data_order import APIDataOrder,json,requests
+else:
+	from services.api_data_order import APIDataOrder,json,requests
 
 hotel_atalaya_hotels = 'http://www.mocky.io/v2/5e4a7e4f2f00005d0097d253'
 
@@ -73,24 +76,3 @@ class AtalayaHotels(APIDataOrder):
 	def get_info(self):
 		all_info_json = self.conventional_order(self.get_hotels(),self.rooms_transformed(),self.get_meals())
 		return all_info_json
-
-api_hotels_atalaya = AtalayaHotels(url_hotels='http://www.mocky.io/v2/5e4a7e4f2f00005d0097d253',url_rooms='https://run.mocky.io/v3/132af02e-8beb-438f-ac6e-a9902bc67036',url_meals='http://www.mocky.io/v2/5e4a7e282f0000490097d252')
-
-hoteles_atalaya = api_hotels_atalaya.get_hotels()
-habitaciones_atalaya = api_hotels_atalaya.get_rooms()
-regimenes_atalaya = api_hotels_atalaya.get_meals()
-
-hoteles_atalaya_transformed = api_hotels_atalaya.hotels_transformed()
-
-get_info_atalaya = api_hotels_atalaya.get_info()
-# print("hoteles\n",hoteles_atalaya)
-# print("habitaciones\n",habitaciones_atalaya)
-# print("regimenes\n",regimenes_atalaya)
-# print("hoteeles transformado\n",hoteles_atalaya_transformed)
-print(get_info_atalaya)
-
-get_info_atalaya = json.dumps(get_info_atalaya, indent=4)
- 
-# Writing to sample.json
-with open("sample.json", "w") as outfile:
-    outfile.write(get_info_atalaya)

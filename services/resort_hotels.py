@@ -1,4 +1,7 @@
-from api_data_order import APIDataOrder,json,requests
+if __name__ == '__main__':
+	from api_data_order import APIDataOrder,json,requests
+else:
+	from services.api_data_order import APIDataOrder,json,requests
 
 hotel_resort_hotels = 'http://www.mocky.io/v2/5e4e43272f00006c0016a52b'
 
@@ -77,30 +80,11 @@ class ResortHotels(APIDataOrder):
 			})
 		for hotel in hotels['hotels']:
 			hotel['rooms'] = conventional_json['hotels'][hotel['code']]['rooms']
+			hotel['city'] = hotel['location']
+			del hotel['location']
 			
 		return hotels
 
 	def get_info(self):
 		all_info_json = self.conventional_order(self.get_hotels(),self.rooms_transformed(),self.get_meals())
 		return all_info_json
-
-api_hotels_resort = ResortHotels(url_hotels='http://www.mocky.io/v2/5e4e43272f00006c0016a52b',url_meals='http://www.mocky.io/v2/5e4a7dd02f0000290097d24b')
-
-hoteles_resort = api_hotels_resort.get_hotels()
-habitaciones_resort = api_hotels_resort.get_rooms()
-regimenes_resort = api_hotels_resort.get_meals()
-
-hoteles_resort_transformed = api_hotels_resort.hotels_transformed()
-
-get_info_resort = api_hotels_resort.get_info()
-# print("hoteles\n",hoteles_resort)
-# print("habitaciones\n",habitaciones_resort)
-# print("regimenes\n",regimenes_resort)
-# print("hoteeles transformado\n",hoteles_resort_transformed)
-# print(get_info_resort)
-
-get_info_resort = json.dumps(get_info_resort, indent=4)
- 
-# Writing to sample.json
-with open("sample2.json", "w") as outfile:
-    outfile.write(get_info_resort)
