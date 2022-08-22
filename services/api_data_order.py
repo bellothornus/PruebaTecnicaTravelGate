@@ -1,5 +1,6 @@
 from abc import abstractmethod
 import requests, json
+import copy
 
 class APIDataOrder():
 
@@ -20,11 +21,10 @@ class APIDataOrder():
 			list_info['hotels'].update(api.dictionary_order()['hotels'])
 		return list_info
 
-	def book_best_hotel(self,bookings,budget,persons):
+	def book_best_hotel(self,input_bookings):
 		def downgrade_booking(index,bookings):
-			booking = bookings[index]
-			booking_meal_plan = booking['meal_plan']
-			booking_room_type = booking['room_type']
+			booking_meal_plan = bookings[index]['meal_plan']
+			booking_room_type = bookings[index]['room_type']
 			meal_plans = {'sa':0,'ad':1,"mp":2,'pc':3}
 			meal_plans_inv = {v: k for k,v in meal_plans.items()}#{0: 'sa', 1: 'ad', 2: 'mp', 3: 'pc'}
 			meal_plans_length = len(meal_plans_inv)
@@ -34,16 +34,19 @@ class APIDataOrder():
 			booking_meal_plan_priority = meal_plans[booking_meal_plan]
 			booking_room_type_priority = room_types[booking_room_type]
 			if  booking_meal_plan_priority > 0:
-				booking_meal_plan = meal_plans_inv[booking_meal_plan_priority-1]
+				bookings[index]['meal_plan'] = meal_plans_inv[booking_meal_plan_priority-1]
 			else:
 				if booking_room_type_priority > 0:
-					booking_room_type = room_types_inv[booking_meal_plan_priority-1]
-					booking_meal_plan = meal_plans_inv[meal_plans_length-1]
+					bookings[index]['room_type'] = room_types_inv[booking_room_type_priority-1]
+					bookings[index]['meal_plan'] = meal_plans_inv[meal_plans_length-1]
 
 		dict_all_hotels = self.show_all_dict()
-		bookings_copy = bookings.copy()
+		bookings_copy = copy.deepcopy(input_bookings)
+		budget = bookings_copy['budget']
+		persons = bookings_copy['persons']
 		finished = False
 		while finished is not True:
+			budget_left = budget
 			for index,booking in enumerate(bookings_copy['bookings']):
 				booking_hotel_code = booking['hotel_code']
 				booking_nights = booking['nights']
@@ -51,46 +54,29 @@ class APIDataOrder():
 				booking_meal_plan = booking['meal_plan']
 				room_meal_price = dict_all_hotels['hotels'][booking_hotel_code]['rooms'][booking_meal_plan][booking_room_type]['price']
 				total_cost = room_meal_price * booking_nights * persons
-				budget_left = budget - total_cost
+				budget_left -= total_cost
 				if budget_left < 0:
-					print("no te lo puedes permitir, buscando opcion mas adecuada...")
-					downgrade_booking(index,bookings_copy['bookings'])
-					if booking_room_type == 0 and booking_meal_plan == 0:
+					if booking_room_type == 'standard' and booking_meal_plan == 'sa':
 						if index == 0:
 							print("no te puedes permitir reservr nada, lo sentimos")
+							finished = True
+							break
+						else:
+							downgrade_booking(index-1,bookings_copy['bookings'])
+							bookings_copy['bookings'][index] = input_bookings['bookings'][index]
+							break
+					else:
+						print("no te lo puedes permitir, buscando opcion mas adecuada...")
+						downgrade_booking(index,bookings_copy['bookings'])
+						break
+					
 				else:
-					if index+1 >= len(booking):
+					if index+1 >= len(bookings_copy['bookings']):
 						finished = True
 						break
 		return bookings_copy
 						
-
-
-		# list_all_hotels = self.show_all_info()
-		# book_aux = {}
-		# list_made_bookings = []
-		# for book in bookings['bookings']:
-		# 	book_aux = {
-		# 		'meal_plan':book['meal_plan'],
-		# 		'room_type':book['room_type']
-		# 	}
-		# 	for hotel in list_all_hotels['hotels']:
-		# 		if hotel['code'] == book['hotel_code']:
-		# 			for room in hotel['rooms']:
-		# 				if room['meal_plan'] == book['meal_plan'] and room['room_type'] == room['room_type']:
-		# 					cost = room['price']*book['nights'] * persons
-		# 					budget_left = budget - cost
-		# 					if budget_left > -1:
-		# 						list_made_bookings.append({
-		# 							'meal_plan':room['meal_plan'],
-		# 							'name': room['name'],
-		# 							'price': cost,
-		# 							'room_type': room['room_type'],
-		# 							'nights':book['nights']
-		# 						})
-		# 					else:
-		# 						self.downgrade_book(book)
-		# {
+		#Ejemplo de lo que llegará como dato
 		# 	'bookings':[
 		# 		{
 		# 			'hotel_code':'acs'

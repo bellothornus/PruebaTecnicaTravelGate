@@ -42,9 +42,7 @@ def list_all_hotels_dict():
 @app.route('/listar-mejor-hotel', methods=['GET'])
 def list_best_hotel():
 	bookings = flask_request.json
-	budget = bookings['budget']
-	persons = bookings['persons']
-	return api_data_order.book_best_hotel(bookings,budget,persons)
+	return api_data_order.book_best_hotel(bookings)
 		# {
 		# 	'bookings':[
 		# 		{
