@@ -1,7 +1,9 @@
 if __name__ == '__main__':
 	from api_data_order import APIDataOrder,json,requests
+	from ..utilities.utilities import lowercase_dictionary
 else:
 	from services.api_data_order import APIDataOrder,json,requests
+	from utilities.utilities import lowercase_dictionary
 
 hotel_resort_hotels = 'http://www.mocky.io/v2/5e4e43272f00006c0016a52b'
 
@@ -47,6 +49,7 @@ class ResortHotels(APIDataOrder):
 			hotels_json['hotels'][hotel['code']] = {
 				'name':hotel['name'],
 				'city':hotel['location'],
+				'rooms':{}
 			}
 		return hotels_json
 
@@ -85,6 +88,44 @@ class ResortHotels(APIDataOrder):
 			
 		return hotels
 
+	def dictionary_order(self):
+		get_info_dev = {}
+		get_info_dev = self.hotels_transformed()
+		list_meals = self.get_meals()
+		dict_rooms = self.rooms_transformed()
+		for meal_plan in list_meals['regimenes']:
+			code_meal = meal_plan['code']
+			name_meal = meal_plan['name']
+			code_room = meal_plan['room_type']
+			hotel = meal_plan['hotel']
+			price = meal_plan['price']
+			room_name = dict_rooms[code_room]
+			has_meal = get_info_dev['hotels'][hotel]['rooms'].get(code_meal)
+			if has_meal == None:
+				get_info_dev['hotels'][hotel]['rooms'][code_meal] = {}
+			
+			has_room = get_info_dev['hotels'][hotel]['rooms'][code_meal].get(room_name)
+			if has_room == None:
+				get_info_dev['hotels'][hotel]['rooms'][code_meal][room_name] = {}
+			
+			get_info_dev['hotels'][hotel]['rooms'][code_meal][room_name] = {
+						'price':price,
+						'meal_name':name_meal,
+						'room_name':room_name
+					}
+		get_info_dev = lowercase_dictionary(get_info_dev)
+		return get_info_dev
+
 	def get_info(self):
 		all_info_json = self.conventional_order(self.get_hotels(),self.rooms_transformed(),self.get_meals())
 		return all_info_json
+
+resort = ResortHotels(url_hotels=hotel_resort_hotels,url_rooms=hotel_resort_hotels,url_meals=hotel_resort_meals)
+#print(resort.dictionary_order())
+#print(resort.rooms_transformed())
+#print("\n\n")
+#print(resort.dictionary_order())
+# dict_result = resort.dictionary_order()
+# json_result = json.dumps(dict_result,indent=4)
+# with open('../data/resort_dic.json','w') as file:
+# 	file.write(json_result)
