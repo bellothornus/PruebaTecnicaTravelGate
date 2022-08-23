@@ -1,9 +1,8 @@
-from urllib import request
-from services.atalaya_hotels import AtalayaHotels,APIDataOrder
+from services.atalaya_hotels import AtalayaHotels
 from services.resort_hotels import ResortHotels
+from services.api_data_order import APIDataOrder
 import json
 from flask import Flask, request as flask_request
-#from flask import request as flask_request
 
 
 api_hotels_atalaya = AtalayaHotels(url_hotels='http://www.mocky.io/v2/5e4a7e4f2f00005d0097d253',url_rooms='https://run.mocky.io/v3/132af02e-8beb-438f-ac6e-a9902bc67036',url_meals='http://www.mocky.io/v2/5e4a7e282f0000490097d252')
@@ -15,10 +14,11 @@ api_data_order = APIDataOrder([api_hotels_atalaya,api_hotels_resort])
 json_result = api_data_order.show_all_info()
 
 json_result = json.dumps(json_result, indent=4)
- 
+
 # el Punto 1 Entero Hecho
-with open("data/result.json", "w") as outfile:
-    outfile.write(json_result)
+if __name__ == '__main__':
+	with open("data/result.json", "w") as outfile:
+		outfile.write(json_result)
 
 #el punto 2
 app = Flask(__name__)
@@ -59,5 +59,5 @@ def list_best_hotel():
 		# 		}
 		# 	]
 		# }
-
-app.run(debug=True,host='0.0.0.0')
+if __name__ == '__name__':
+	app.run(debug=True,host='0.0.0.0')
