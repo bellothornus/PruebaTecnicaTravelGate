@@ -58,7 +58,7 @@ class APIDataOrder():
 				if budget_left < 0:
 					if booking_room_type == 'standard' and booking_meal_plan == 'sa':
 						if index == 0:
-							print("no te puedes permitir reservr nada, lo sentimos")
+							#no te puedes permitir reservr nada, lo sentimos
 							finished = True
 							break
 						else:
@@ -66,7 +66,7 @@ class APIDataOrder():
 							bookings_copy['bookings'][index] = input_bookings['bookings'][index]
 							break
 					else:
-						print("no te lo puedes permitir, buscando opcion mas adecuada...")
+						#no te lo puedes permitir, buscando opcion mas adecuada...
 						downgrade_booking(index,bookings_copy['bookings'])
 						break
 					

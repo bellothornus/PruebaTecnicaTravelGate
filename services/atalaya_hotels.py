@@ -76,11 +76,6 @@ class AtalayaHotels(APIDataOrder):
 			
 		return hotels
 
-	def conventional_dict(self):
-		list_all_hotels = self.conventional_order()
-		for hotel in list_all_hotels['hotels']:
-			pass
-
 	def dictionary_order(self):
 		get_info_dev = {}
 		get_info_dev = self.hotels_transformed()
@@ -117,7 +112,7 @@ class AtalayaHotels(APIDataOrder):
 		all_info_json = self.conventional_order(self.get_hotels(),self.rooms_transformed(),self.get_meals())
 		return all_info_json
 
-atalaya = AtalayaHotels(url_hotels=hotel_atalaya_hotels,url_rooms=hotel_atalaya_rooms,url_meals=hotel_atalaya_meals)
+#atalaya = AtalayaHotels(url_hotels=hotel_atalaya_hotels,url_rooms=hotel_atalaya_rooms,url_meals=hotel_atalaya_meals)
 #print(atalaya.dictionary_order())
 #print(atalaya.rooms_transformed())
 #print("\n\n")
