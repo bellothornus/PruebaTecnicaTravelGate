@@ -1,3 +1,4 @@
+import sys
 from services.atalaya_hotels import AtalayaHotels
 from services.resort_hotels import ResortHotels
 from services.api_data_order import APIDataOrder
@@ -17,8 +18,11 @@ json_result = json.dumps(json_result, indent=4)
 
 # el Punto 1 Entero Hecho
 if __name__ == '__main__':
-	with open("data/result.json", "w") as outfile:
-		outfile.write(json_result)
+	try:
+		with open("./data/result.json", "w") as outfile:
+			outfile.write(json_result)
+	except:
+		pass
 
 #el punto 2
 app = Flask(__name__)
@@ -43,21 +47,10 @@ def list_all_hotels_dict():
 def list_best_hotel():
 	bookings = flask_request.json
 	return api_data_order.book_best_hotel(bookings)
-		# {
-		# 	'bookings':[
-		# 		{
-		# 			'hotel_code':'acs'
-		# 			'days':3,
-		# 			'room_type':'suite',
-		# 			'meal_plan';'pc'
-		# 		},
-		# 		{
-		# 			'hotel_code':'hrc',
-		# 			'days':5,
-		# 			'room_type':'standard',
-		# 			'meal_plan':'ad'
-		# 		}
-		# 	]
-		# }
-if __name__ == '__name__':
-	app.run(debug=True,host='0.0.0.0')
+
+if __name__ == '__main__':
+	try:
+		if sys.argv[1] == "production":
+			app.run(debug=False, use_debugger=False,host='0.0.0.0')
+	except IndexError:
+		app.run(debug=True, use_debugger=True,host='0.0.0.0')
